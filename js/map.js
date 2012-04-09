@@ -6,7 +6,17 @@ var center = new google.maps.LatLng(42.04113400940814,-71.795654296875);
 var marker;
 var mainLayer;
 
-function initialize() {
+$(function() {
+        $( "#tabs" ).tabs({
+    		collapsible: true,
+            selected: -1
+		});
+        $( "input:submit,input:reset" ).button();
+        $('input, textarea').placeholder();
+        fusion();
+        popLists();
+	});
+function fusion() {
     
   m = new google.maps.Map(document.getElementById('map'), {
       center: center,
@@ -42,57 +52,49 @@ function resetgeo() {
 marker.setMap(null);
 }
 
- $(function() {
-        $( "#tabs" ).tabs({
-			collapsible: true,
-            selected: -1
-		});
-        $( "input:submit,input:reset" ).button();
-        $('input, textarea').placeholder();
-	});
+
     
     google.load('visualization', '1', {});
     
 function popLists(){    
- var queryFacTypeText = encodeURIComponent("SELECT 'Type', COUNT() FROM " + tid + " GROUP BY 'Type'");
-	var queryFacType = new google.visualization.Query('http://www.google.com/fusiontables/gvizdata?tq='  + queryFacTypeText);
-	queryFacType.send(getFacTypeData);
-
-    var queryFacSurText = encodeURIComponent("SELECT 'Surface', COUNT() FROM " + tid + " GROUP BY 'Surface'");
-    var queryFacSur = new google.visualization.Query('http://www.google.com/fusiontables/gvizdata?tq='  + queryFacSurText);
-	queryFacSur.send(getFacSurData);
+    MakePopList('Type',getFacTypeData);
+    MakePopList('Surface',getFacSurData);
     }
 
+function MakePopList(columnName,callfunc){
+ var queryText = encodeURIComponent("SELECT " +columnName + ", COUNT() FROM " + tid + " GROUP BY " +columnName);
+    var query = new google.visualization.Query('http://www.google.com/fusiontables/gvizdata?tq='  + queryText);
+    query.send(callfunc);
+	}
+    
+var getFacTypeData = MakeData("facType"," AND 'Type' like '");
+var getFacSurData = MakeData("facSur"," AND 'Surface' like  '");
 
-function getFacTypeData(response) {
-  
+function MakeData(selectID,querryText){
+
+function getData(response) {
   // Get the number of rows
-  numRows = response.getDataTable().getNumberOfRows();
+var numRows = response.getDataTable().getNumberOfRows();
   
   // Add options to the select menu based on the results
-  typeSelect = document.getElementById("facType");  
+ var typeSelect = document.getElementById(selectID);  
   for(i = 0; i < numRows; i++) {
-      newoption = document.createElement('option');
-  	newoption.setAttribute('value'," AND 'Type' like '" + response.getDataTable().getValue(i, 0) + "'");
-  	newoption.innerHTML = response.getDataTable().getValue(i, 0);
-  	typeSelect.appendChild(newoption);
+      var ftData = response.getDataTable().getValue(i, 0);
+      if (!ftData)
+     { continue;}
+    
+     else
+     { var newoption = document.createElement('option');
+      newoption.setAttribute('value',querryText + ftData + "'");
+    newoption.innerHTML = ftData;
+    typeSelect.appendChild(newoption);}
   }  
 }
+return getData;
+}    
+    
+    
 
-function getFacSurData(response) {
-  
-  // Get the number of rows
-  numRows = response.getDataTable().getNumberOfRows();
-  
-  // Add options to the select menu based on the results
-  facSurSelect = document.getElementById("facSur");  
-  for(i = 0; i < numRows; i++) {
-      newoption = document.createElement('option');
- 	newoption.setAttribute('value'," AND 'Surface' like  '" + response.getDataTable().getValue(i, 0) + "'");
-  	newoption.innerHTML = response.getDataTable().getValue(i, 0);
-  	facSurSelect.appendChild(newoption);
-  }  
-}
 function changeMap() {
    var facType = document.getElementById('facType').value.replace("'", "\\'");
   var facSur = document.getElementById('facSur').value.replace("'", "\\'");

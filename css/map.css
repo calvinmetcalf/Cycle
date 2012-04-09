@@ -24,31 +24,3 @@
    right:15px;
    z-index:11;
   }
-  
-  dl.oainfo
-{
-    float: left;
-
-    margin: 1em 0;
-	padding: 0;
-
-}
-
-.oainfo dt
-{
-	clear: left;
-	float: left;
-
-	margin: 0;
-	padding: 5px;
-
-	font-weight: bold;
-}
-
-.oainfo dd
-{
-	float: left;
-	margin: 0;
-	padding: 5px;
-
-}
