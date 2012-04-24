@@ -58,7 +58,7 @@ marker.setMap(null);
     
 function popLists(){    
     MakePopList('Type',getFacTypeData);
-    MakePopList('Surface',getFacSurData);
+   
     }
 
 function MakePopList(columnName,callfunc){
@@ -68,7 +68,7 @@ function MakePopList(columnName,callfunc){
 	}
     
 var getFacTypeData = MakeData("facType"," AND 'Type' like '");
-var getFacSurData = MakeData("facSur"," AND 'Surface' like  '");
+
 
 function MakeData(selectID,querryText){
 
@@ -97,7 +97,7 @@ return getData;
 
 function changeMap() {
    var facType = document.getElementById('facType').value.replace("'", "\\'");
-  var facSur = document.getElementById('facSur').value.replace("'", "\\'");
-  mainLayer.setQuery("SELECT 'geometry' FROM " + tid + " WHERE 'FacStatus' = 1 " + facType + facSur);
+ 
+  mainLayer.setQuery("SELECT 'geometry' FROM " + tid + " WHERE 'FacStatus' = 1 " + facType);
  
 }
